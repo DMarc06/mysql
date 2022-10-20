@@ -1,0 +1,265 @@
+{\rtf1\ansi\ansicpg1252\deff0\nouicompat\deflang1036{\fonttbl{\f0\fnil\fcharset0 Calibri;}}
+{\*\generator Riched20 10.0.19041}\viewkind4\uc1 
+\pard\sa200\sl276\slmult1\f0\fs22\lang12 -- Script SQL\par
+\par
+-- Langage de definition de donn\'e9es\par
+\par
+-- Creation d'un base de donn\'e9es\par
+DROP DATABASE IF EXISTS poec_asr;\par
+CREATE DATABASE poec_asr;\par
+\par
+-- Utilisation d'une db\par
+USE poec_asr;\par
+\par
+-- Cr\'e9ation de la table person, avec la declaration de la colonne id en tant que cle primaire\par
+-- Une cl\'e9 primaire identifie un ensemble de colonnes\par
+CREATE TABLE personne(\par
+\tab id int PRIMARY KEY AUTO_INCREMENT,\par
+    nom varchar(45) NOT NULL,\par
+    prenom varchar(45) NOT NULL,\par
+    age int,\par
+    salaire int,\par
+\tab ville varchar(45) DEFAULT 'Nice',\par
+    CHECK(age < 150)\par
+);\par
+\par
+CREATE TABLE voiture(\par
+\tab immatriculation int PRIMARY KEY AUTO_INCREMENT,\par
+    marque varchar(45),\par
+    modele varchar(45),\par
+    annee int,\par
+    id_personne int,\par
+    FOREIGN KEY (id_personne) REFERENCES personne(id)\par
+);\par
+\par
+-- Pour supprimer une table\par
+-- DROP TABLE voiture;\par
+\par
+-- DROP TABLE personne;\par
+\par
+CREATE TABLE employe(\par
+\tab cni char(6),\par
+    prenom char(20),\par
+    nom char(20),\par
+    CONSTRAINT pk_employe PRIMARY KEY (prenom, nom)\par
+);\par
+\par
+ALTER TABLE employe \par
+DROP PRIMARY KEY;\par
+\par
+ALTER TABLE employe \par
+ADD CONSTRAINT pk_employe PRIMARY KEY (cni);\par
+\par
+ALTER TABLE employe \par
+MODIFY COLUMN nom varchar(45) NOT NULL;\par
+\par
+-- Langage de manipulation de donnees\par
+\par
+-- Inserer une valeur pour chaque colonne\par
+INSERT INTO personne VALUES\par
+(1, "Wick", "John", 30, 2000, "Nice"),\par
+(2, "Doe", "Bob", 40, 1500, "Paris"),\par
+(3, "Wayne", "John", 30, 2000, "Marseille"),\par
+(4, "Benzema", "Karim", 33, 20000, "Lyon"),\par
+(5, "DiMaria", "Angel", 33, 20000, "Marseille");\par
+\par
+-- Dans cet exemple, nous precisons les colonnes -> utile pour l'auto-increment\par
+INSERT INTO personne(nom, prenom, age, salaire, ville) VALUE ("Cooper", "John", 45, 2000, "New-York");\par
+\par
+INSERT INTO personne(nom, prenom) VALUE ("Dupont", "Henri");\par
+\par
+INSERT INTO personne SET nom = "Dupond", prenom = "Jean", age = 30, salaire = 2000;\par
+\par
+INSERT INTO voiture VALUES\par
+(100, 'Peugeot', '5008', 2018, 5),\par
+(200, 'Renault', 'clio', 2000, 4),\par
+(201, 'Renault', 'clio', 2000, 6),\par
+(300, 'Ford', 'fiesta', 2010, 1),\par
+(400, 'Peugeot', '106', 2002, 3),\par
+(500, 'Citroen', 'C4', 2015, 4),\par
+(501, 'Citroen', 'C4', 2015, 6),\par
+(600, 'Ford', 'Kuga', 2019, null),\par
+(700, 'Fiat', 'punto', 2008, 5);\par
+\par
+-- Langage d'interrogation de donn\'e9es\par
+\par
+-- Une requ\'e8te SQL de lecture est compos\'e9e d'au moins deux clauses :\par
+\par
+-- SELECT : selectionner les colonnes\par
+-- FROM : cibler la table concern\'e9\par
+\par
+-- WHERE : D\'e9clarer une condition\par
+-- ....\par
+\par
+-- Selectionne toutes les donn\'e9es de la table personne\par
+SELECT * FROM personne;\par
+\par
+-- Selectionne les colonnes nom et prenom de la table personne\par
+SELECT nom, prenom\par
+FROM personne;\par
+\par
+-- Selectionne la colonne ville de la table personne\par
+SELECT ville\par
+FROM personne;\par
+\par
+-- Supprime les doublons\par
+SELECT distinct(ville)\par
+FROM personne;\par
+\par
+-- Compte le nombre de ville dans la table personne\par
+-- La fonction d'aggr\'e9gation COUNT() permet de compter les nombre \par
+-- d'enregistrements, ici le nombre de villes distinctes dans la table personne\par
+SELECT COUNT(distinct(ville)) AS nombre_ville\par
+FROM personne;\par
+\par
+-- Selectionne toutes les personnes dont la ville est Marseille\par
+SELECT * \par
+FROM personne\par
+WHERE ville = 'Marseille';\par
+\par
+-- Op\'e9rateurs logiques :\par
+-- AND\par
+-- OR\par
+-- !\par
+\par
+-- Ecrire une requete SQL qui permet de selectionner les personnes qui\par
+-- habitent Marseille ou Nice.\par
+\par
+SELECT * FROM personne\par
+WHERE ville = 'Nice' OR ville = 'Marseille';\par
+\par
+-- Ecrire une requete SQL qui permet de selectionner les personnes dont\par
+-- le salaire est compris entre 2000 et 3000.\par
+\par
+SELECT * FROM personne\par
+WHERE salaire >= 2000 AND salaire <= 3000;\par
+\par
+SELECT *\par
+FROM personne\par
+WHERE salaire BETWEEN 2000 AND 3000;\par
+\par
+-- Ecrire une requete SQL qui permet de selectionner les personnes qui\par
+-- habitent Marseille et dont le salaire est soit inferieur ou egal a 2000 soit\par
+-- superieur ou egal a 2500.\par
+\par
+SELECT * FROM personne\par
+WHERE (salaire <= 2000 OR salaire >= 2500) AND ville = 'Marseille';\par
+\par
+SELECT * FROM personne\par
+WHERE salaire NOT BETWEEN 2001 AND 2499 AND ville = "Marseille";\par
+\par
+-- Selectionne les personnes dont le nom de la ville contient le caract\'e8re a\par
+SELECT *\par
+FROM personne\par
+WHERE ville like '%a%';\par
+\par
+-- Selectionne les personnes dont le nom de la ville commence par le caract\'e8re p\par
+SELECT *\par
+FROM personne\par
+WHERE ville like 'p%';\par
+\par
+-- Selectionne les personnes dont le nom de la ville finit par le caract\'e8re s\par
+SELECT *\par
+FROM personne\par
+WHERE ville like '%s';\par
+\par
+-- Selectionne les personnes dont le cinquieme caract\'e8re est un d\par
+SELECT *\par
+FROM personne\par
+WHERE nom like '____d%';\par
+\par
+-- Selectionne les voitures dont l'id du propri\'e9taire est non-null\par
+-- cad, toutes les voitures qui ont un proprietaire\par
+SELECT *\par
+FROM voiture\par
+WHERE id_personne IS NOT NULL;\par
+\par
+-- Compte le nombre de vehicule pour chaque personne\par
+-- Il faut les regrouper avec GROUP BY, ici selon la colonne id_personne\par
+-- ici, on filtre les resultats de la fonction d\rquote agregation \par
+SELECT id_personne, COUNT(*) AS nombre_vehicule\par
+FROM voiture\par
+WHERE id_personne IS NOT NULL\par
+GROUP BY id_personne\par
+HAVING nombre_vehicule > 1;\par
+\par
+-- Utiliser la fonction IFNULL() por remplacer les valeurs nulles par une autre valeur\par
+SELECT marque, IFNULL(id_personne,'pas de proprietaire') AS proprietaire\par
+FROM voiture;\par
+\par
+-- Classe le resultat selon le numero du proprietaire\par
+-- ORDER BY : ASC par defaut, sinon declarer DESC pour un ordre d\'e9croissant\par
+SELECT *\par
+FROM voiture\par
+WHERE id_personne IS NOT NULL\par
+ORDER BY id_personne DESC;\par
+\par
+-- Fonctions d'aggregation\par
+\par
+-- COUNT()\par
+-- MAX()\par
+-- MIN()\par
+-- SUM()\par
+-- AVG()\par
+\par
+-- Ecrire une requete SQL qui permet de compter la somme des salaires\par
+-- regroupe par ville\par
+SELECT ville, SUM(salaire) AS somme_salaire\par
+FROM personne\par
+GROUP BY ville;\par
+\par
+-- Ecrire une requete SQL qui permet de regrouper les identifiants de\par
+-- personne qui ont un vehicule de marque Renault ou Citroen\par
+SELECT marque, id_personne\par
+FROM voiture\par
+WHERE marque = 'Renault' OR marque = 'Citroen'\par
+GROUP BY marque, id_personne;\par
+\par
+SELECT marque, id_personne\par
+FROM voiture\par
+WHERE marque = 'Renault'\par
+UNION\par
+SELECT marque, id_personne\par
+FROM voiture\par
+WHERE marque = 'Citroen';\par
+\par
+-- Les jointures\par
+\par
+-- Deux types de jointure\par
+\par
+-- Jointure implicite : Avec la clause WHERE\par
+SELECT nom, prenom, ville, marque, modele\par
+FROM personne, voiture\par
+WHERE personne.id = voiture.id_personne;\par
+\par
+-- En cas d'ambiguite, si 2 colonnes portent le m\'eame nom,\par
+-- il faudra les prefixer par le nom de leur table respective\par
+SELECT nom, prenom, ville, marque, modele\par
+FROM personne p, voiture v\par
+WHERE p.id = v.id_personne;\par
+\par
+-- Jointure Explicite : Avec la clause JOIN .. ON\par
+\par
+-- JOIN .. ON = Renvoie les lignes en cas de correspondance avec les \par
+-- deux  tables\par
+SELECT nom, prenom, ville, marque, modele\par
+FROM personne p\par
+JOIN voiture v ON  p.id = v.id_personne;\par
+\par
+-- LEFT JOIN ... ON = Renvoie toutes les lignes de la table de gauche\par
+-- meme s'il n'y a aucune correspondance avec la table de droite\par
+SELECT nom, prenom, ville, marque, modele\par
+FROM personne\par
+LEFT JOIN voiture ON id = id_personne;\par
+\par
+SELECT nom, prenom, ville, marque, modele\par
+FROM personne\par
+RIGHT JOIN voiture ON id = id_personne;\par
+\par
+\par
+\par
+\par
+\par
+\par
+}
+ 
